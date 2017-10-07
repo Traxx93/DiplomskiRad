@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DailyPlanning", "DailyPlanning\DailyPlanning.csproj", "{A39B12E6-7546-4C39-8193-45840B0A7AC6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A9AF7DED-E306-475C-BA60-B2B5F897F43D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AutomatedUITests", "AutomatedUITests", "{3305FE7F-8F48-4817-B3FA-949CF1FAA61F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DailyPlanning", "DailyPlanning\DailyPlanning.csproj", "{A39B12E6-7546-4C39-8193-45840B0A7AC6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DailyPlanning.Tests", "DailyPlanning.Tests\DailyPlanning.Tests.csproj", "{99C7E5EF-44D4-4145-AF40-4C3637EDE260}"
 EndProject
@@ -32,5 +32,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3305FE7F-8F48-4817-B3FA-949CF1FAA61F} = {A9AF7DED-E306-475C-BA60-B2B5F897F43D}
 		{99C7E5EF-44D4-4145-AF40-4C3637EDE260} = {3305FE7F-8F48-4817-B3FA-949CF1FAA61F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {995F5CF3-7C65-42B9-A4F4-960B62F08A32}
 	EndGlobalSection
 EndGlobal

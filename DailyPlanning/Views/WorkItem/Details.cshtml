@@ -1,0 +1,67 @@
+﻿@model DailyPlanning.Models.WorkItemsViewModel.WorkItemDetailsViewModel
+
+@{
+    ViewBag.Title = "WorkItem Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.WorkItem.WorkItemID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.WorkItem.WorkItemID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.WorkItem.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.WorkItem.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.WorkItem.Description)
+        </dt>
+
+        <dd>
+            @Html.Raw(Model.WorkItem.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.WorkItem.Status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.WorkItem.Status)
+        </dd>
+
+    </dl>
+    @if (Model.Project != null)
+    {
+        <h4>Project</h4>
+        <div>
+            <table class="table">
+                <thead>
+                <th>@Html.DisplayNameFor(model => model.Project.ProjectID)</th>
+                <th>@Html.DisplayNameFor(model => model.Project.Title)</th>
+                </thead>
+
+                <tr>
+                    <td>@Html.DisplayFor(model => model.Project.ProjectID)</td>
+                    <td>@Html.ActionLink(Model.Project.Title, "Details", "Project", new { id = Model.Project.ProjectID }, new { @class = "details-project-link-id" })</td>
+                </tr>
+            </table>
+        </div>
+    }
+</div>
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.WorkItem.WorkItemID }, new { @class = "btn btn-default", @id = "details-edit-link-id" }) &nbsp;&nbsp;
+    @Html.ActionLink("Back to List", "Index", "", new { @class = "btn btn-default", @id = "details-back-to-list-link-id" })
+</p>
