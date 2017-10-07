@@ -2,6 +2,7 @@
 using DailyPlanning.Tests.Pages.ProjectPages;
 using Microsoft.VisualStudio.TestTools.UITesting;
 using Microsoft.VisualStudio.TestTools.UITesting.HtmlControls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DailyPlanning.Tests.Pages.WorkItemPages
 {
@@ -14,7 +15,7 @@ namespace DailyPlanning.Tests.Pages.WorkItemPages
             this.browser = browser;
         }
 
-        public EditWorkItemPage NavigateToEditPage()
+        public EditWorkItemPage goToEditPage()
         {
             var uiLinkEdit = new HtmlHyperlink(browser);
 
@@ -25,26 +26,15 @@ namespace DailyPlanning.Tests.Pages.WorkItemPages
             return new EditWorkItemPage(browser);
         }
 
-        public ProjectDetailsPage NavigateToProjectDetails()
+        public ProjectDetailsPage goToProjectDetails()
         {
             var uiLinkDetails = new HtmlHyperlink(browser);
 
-            uiLinkDetails.SearchProperties.Add(HtmlControl.PropertyNames.Class, WorkItemDetailsPageConst.DETAILS_PROJECT_LINK_ID);
+            uiLinkDetails.SearchProperties.Add(HtmlControl.PropertyNames.Class, ProjectsPageConst.INDEX_DETAILS_LINK_CLASS);
             uiLinkDetails.Find();
             Mouse.Click(uiLinkDetails);
 
             return new ProjectDetailsPage(browser);
-        }
-
-        public WorkItemsPage NavigateToWorkItemsPage()
-        {
-            var uiLinkDetails = new HtmlHyperlink(browser);
-
-            uiLinkDetails.SearchProperties.Add(HtmlControl.PropertyNames.Id, WorkItemDetailsPageConst.DETAILS_BACK_TO_LIST_LINK_ID);
-            uiLinkDetails.Find();
-            Mouse.Click(uiLinkDetails);
-
-            return new WorkItemsPage(browser);
         }
 
         public bool CheckPageTitle()

@@ -1,13 +1,14 @@
-﻿using AutoMapper;
-using DailyPlanning.Infrastructure.Context;
-using DailyPlanning.Infrastructure.Entities;
-using DailyPlanning.Infrastructure.Enums;
-using DailyPlanning.Models.DailyPlansViewModel;
-using DailyPlanning.Models.WorkItemsViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using DailyPlanning.Infrastructure.Context;
+using DailyPlanning.Infrastructure.Entities;
+using AutoMapper;
+using DailyPlanning.Models.DailyPlansViewModel;
+using DailyPlanning.Models.WorkItemsViewModel;
+using DailyPlanning.Infrastructure.Enums;
 
 namespace DailyPlanning.Controllers
 {
@@ -16,47 +17,59 @@ namespace DailyPlanning.Controllers
         DailyPlanningContext context;
         IMapper mapper;
 
+
         public DailyPlanController(DailyPlanningContext context, IMapper mapper)
         {
             this.context = context;
             this.mapper = mapper;
         }
 
-        // This action get all Daily Plans. 
+        // GET: DailyPlans
         public ActionResult Index()
         {
-            var dailyPlansEntities = context.DailyPlans.Where(dp => dp.DayBefore.Any(wi => context.WorkItems
-                                            .Select(x => x.WorkItemID).Contains(wi.WorkItemID)) || dp.Today.Any(wi => context.WorkItems
-                                            .Select(x => x.WorkItemID)
-                                            .Contains(wi.WorkItemID))).OrderByDescending(dp => dp.Date);
-            var dailyPlanViewModel = mapper.Map<IEnumerable<DailyPlan>, IEnumerable<DailyPlanViewModel>>(dailyPlansEntities);
-            return View(dailyPlanViewModel);
-        }
 
-        // Get action for a new Daily Plan
-        [HttpGet]
+
+
+            var dailyPlansEntities = context.DailyPlans.Where(dp => dp.DayBefore.Any(wi => context.WorkItems.Select(x => x.WorkItemID).Contains(wi.WorkItemID)) ||
+                                                         dp.Today.Any(wi => context.WorkItems.Select(x => x.WorkItemID).Contains(wi.WorkItemID))).OrderBy(dp => dp.Date);
+
+            var dailyPlanViewModel = mapper.Map<IEnumerable<DailyPlan>, IEnumerable<DailyPlanViewModel>>(dailyPlansEntities);
+
+            return View(dailyPlanViewModel);
+
+
+
+        }
         public ActionResult AddDailyPlan()
         {
-            var dailyPlanViewModel = new AddDailyPlanViewModel();
-            
-            dailyPlanViewModel.Date = DateTime.Now;
-            dailyPlanViewModel.Today = FillListWorkItemsToday();
-            dailyPlanViewModel.DayBefore = FillListWorkItemsDayBefore();
 
+
+            var dailyPlanViewModel = new AddDailyPlanViewModel();
+
+            {
+
+                var workItemEntitiesToday = context.WorkItems.Where(w => w.Status == Status.TO_DO || w.Status == Status.IN_PROGRESS);
+                var workItemEntitiesDayBefore = context.WorkItems.Where(w => w.Status == Status.IN_PROGRESS || w.Status == Status.DONE);
+                var workItemViewModelToday = mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesToday); // pokupio sam podatke iz entiteta i stavio ih u ViewModel
+                var workItemViewModelDayBefore = mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesDayBefore);
+
+                dailyPlanViewModel.Date = DateTime.Now; // setovao sam vreme
+                dailyPlanViewModel.Today = workItemViewModelToday; // postavio dostupne Work Item-e
+                dailyPlanViewModel.DayBefore = workItemViewModelDayBefore;
+            }
             return View(dailyPlanViewModel);
         }
 
-        // Post action for a new Daily Plan
         [HttpPost]
         public ActionResult AddDailyPlan(AddDailyPlanViewModel newDailyPlanViewModel)
         {
             if (ModelState.IsValid)
             {
-                var dailyPlanEntity = mapper.Map<AddDailyPlanViewModel, DailyPlan>(newDailyPlanViewModel);
-                var workItemsToday = new List<WorkItem>();
-                var workItemsDayBefore = new List<WorkItem>();
-                var listDailyPlansBeforeAdd = context.DailyPlans.Select(dp => dp.DailyPlanID);
 
+
+                var dailyPlanEntity = mapper.Map<AddDailyPlanViewModel, DailyPlan>(newDailyPlanViewModel);
+                List<WorkItem> workItemsToday = new List<WorkItem>();
+                List<WorkItem> workItemsDayBefore = new List<WorkItem>();
 
                 foreach (var id in newDailyPlanViewModel.SelectedWorkItemsToday)
                 {
@@ -78,52 +91,69 @@ namespace DailyPlanning.Controllers
                 return RedirectToAction("Index");
             }
 
-            newDailyPlanViewModel.Date = DateTime.Now;
-            newDailyPlanViewModel.Today = FillListWorkItemsToday();
-            newDailyPlanViewModel.DayBefore = FillListWorkItemsDayBefore();
+            var workItemEntitiesToday = context.WorkItems.Where(w => w.Status == Status.TO_DO || w.Status == Status.IN_PROGRESS);
+            var workItemEntitiesDayBefore = context.WorkItems.Where(w => w.Status == Status.IN_PROGRESS || w.Status == Status.DONE);
+            var workItemViewModelToday = mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesToday); // pokupio sam podatke iz entiteta i stavio ih u ViewModel
+            var workItemViewModelDayBefore = mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesDayBefore);
+
+            newDailyPlanViewModel.Date = DateTime.Now; // setovao sam vreme
+            newDailyPlanViewModel.Today = workItemViewModelToday; // postavio dostupne Work Item-e
+            newDailyPlanViewModel.DayBefore = workItemViewModelDayBefore;
 
             return View(newDailyPlanViewModel);
         }
-
-        // Get action for Updating Daily Plan
         [HttpGet]
         public ActionResult Edit(int id)
         {
+
+
+
             var dailyPlanViewModel = new UpdateDailyPlanViewModel();
 
             var dailyPlanEntity = context.DailyPlans.Where(dp => dp.DailyPlanID == id).FirstOrDefault();
             dailyPlanViewModel = mapper.Map<DailyPlan, UpdateDailyPlanViewModel>(dailyPlanEntity);
 
-            dailyPlanViewModel.Date = DateTime.Now;
-            dailyPlanViewModel.Today = FillListWorkItemsToday();
-            dailyPlanViewModel.DayBefore = FillListWorkItemsDayBefore();
+            var workItemEntitiesToday = context.WorkItems.Where(w => w.Status == Status.TO_DO || w.Status == Status.IN_PROGRESS);
+            var workItemEntitiesDayBefore = context.WorkItems.Where(w => w.Status == Status.IN_PROGRESS || w.Status == Status.DONE);
+            var workItemViewModelToday = mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesToday); // pokupio sam podatke iz entiteta i stavio ih u ViewModel
+            var workItemViewModelDayBefore = mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesDayBefore);
+
+            dailyPlanViewModel.Date = DateTime.Now; // setovao sam vreme
+            dailyPlanViewModel.Today = workItemViewModelToday; // postavio dostupne Work Item-e
+            dailyPlanViewModel.DayBefore = workItemViewModelDayBefore;
             dailyPlanViewModel.SelectedWorkItemsDayBefore = dailyPlanEntity.DayBefore.Select(model => model.WorkItemID);
             dailyPlanViewModel.SelectedWorkItemsToday = dailyPlanEntity.Today.Select(model => model.WorkItemID);
 
             return View(dailyPlanViewModel);
+
         }
 
-        // Post action for Updating Daily Plan
         [HttpPost]
         public ActionResult Edit(UpdateDailyPlanViewModel newDailyPlanViewModel)
         {
+
             if (ModelState.IsValid)
             {
 
-                // Takes all unselected work items and remove them from today list
                 var dailyPlanEntity = context.DailyPlans.Find(newDailyPlanViewModel.DailyPlanID);
+
+
+                //Remove deselected WorkItems for today
                 dailyPlanEntity.Today.Where(m => !newDailyPlanViewModel.SelectedWorkItemsToday.Contains(m.WorkItemID))
                     .ToList().ForEach(workItem => dailyPlanEntity.Today.Remove(workItem));
-                
-                // Takes all new selected work items and put them in list today list
+
+
+                //add new work item for today if it already does not exist
                 var existingWorkItemsToday = dailyPlanEntity.Today.Select(m => m.WorkItemID);
                 context.WorkItems.Where(m => newDailyPlanViewModel.SelectedWorkItemsToday.Except(existingWorkItemsToday).Contains(m.WorkItemID))
                     .ToList().ForEach(workItem => dailyPlanEntity.Today.Add(workItem));
 
-                // Takes all unselected work items and remove them from day before list
+                //Remove deselected WorkItems for day before
                 dailyPlanEntity.DayBefore.Where(m => !newDailyPlanViewModel.SelectedWorkItemsDayBefore.Contains(m.WorkItemID))
                     .ToList().ForEach(workItem => dailyPlanEntity.DayBefore.Remove(workItem));
-                // Takes all new selected work items and put them in list day before list
+
+
+                //add new work item for day before if it already does not exist
                 var existingWorkItemsDayBefore = dailyPlanEntity.DayBefore.Select(m => m.WorkItemID);
                 context.WorkItems.Where(m => newDailyPlanViewModel.SelectedWorkItemsDayBefore.Except(existingWorkItemsDayBefore).Contains(m.WorkItemID))
                     .ToList().ForEach(workItem => dailyPlanEntity.DayBefore.Add(workItem));
@@ -133,38 +163,35 @@ namespace DailyPlanning.Controllers
 
                 context.SaveChanges();
                 return RedirectToAction("Index");
-            }            
-            newDailyPlanViewModel.Date = DateTime.Now;
-            newDailyPlanViewModel.Today = FillListWorkItemsToday();
-            newDailyPlanViewModel.DayBefore = FillListWorkItemsDayBefore();
+
+
+            }
+
+            var workItemEntitiesToday = context.WorkItems.Where(w => w.Status == Status.TO_DO || w.Status == Status.IN_PROGRESS);
+            var workItemEntitiesDayBefore = context.WorkItems.Where(w => w.Status == Status.IN_PROGRESS || w.Status == Status.DONE);
+            var workItemViewModelToday = mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesToday); // pokupio sam podatke iz entiteta i stavio ih u ViewModel
+            var workItemViewModelDayBefore = mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesDayBefore);
+
+            newDailyPlanViewModel.Date = DateTime.Now; // setovao sam vreme
+            newDailyPlanViewModel.Today = workItemViewModelToday; // postavio dostupne Work Item-e
+            newDailyPlanViewModel.DayBefore = workItemViewModelDayBefore;
 
             return View(newDailyPlanViewModel);
         }
 
-        // Gets details about chosen daily plan
         public ActionResult Details(int id)
         {
-            var dailyPlanEntity = context.DailyPlans.Where(model => model.DailyPlanID == id).FirstOrDefault();
-            var dailyPlanViewModel = mapper.Map<DailyPlan, DetailsDailyPlanViewModel>(dailyPlanEntity);
-            var detailsDailyPlanViewModel = new DetailsDailyPlanViewModel();
 
+            var dailyPlanEntity = context.DailyPlans.Where(model => model.DailyPlanID == id).FirstOrDefault();
+
+            var dailyPlanViewModel = mapper.Map<DailyPlan, DetailsDailyPlanViewModel>(dailyPlanEntity);
+
+            var detailsDailyPlanViewModel = new DetailsDailyPlanViewModel();
             detailsDailyPlanViewModel = dailyPlanViewModel;
             return View(detailsDailyPlanViewModel);
-        }
-
-        private IEnumerable<WorkItemViewModel> FillListWorkItemsToday()
-        {
-            var workItemEntitiesToday = context.WorkItems.Where(w => w.Status == Status.TO_DO || w.Status == Status.IN_PROGRESS);
-
-            return mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesToday);
 
         }
 
-        private IEnumerable<WorkItemViewModel> FillListWorkItemsDayBefore()
-        {
-            var workItemEntitiesDayBefore = context.WorkItems.Where(w => w.Status == Status.IN_PROGRESS || w.Status == Status.DONE);
-
-            return mapper.Map<IEnumerable<WorkItem>, IEnumerable<WorkItemViewModel>>(workItemEntitiesDayBefore);
-        }
     }
+
 }

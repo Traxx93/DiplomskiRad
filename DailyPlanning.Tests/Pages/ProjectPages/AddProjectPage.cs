@@ -1,6 +1,7 @@
 ﻿using DailyPlanning.Tests.Constants;
 using Microsoft.VisualStudio.TestTools.UITesting;
 using Microsoft.VisualStudio.TestTools.UITesting.HtmlControls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DailyPlanning.Tests.Pages.ProjectPages
 {
@@ -52,15 +53,6 @@ namespace DailyPlanning.Tests.Pages.ProjectPages
             uiValidationError.SearchProperties.Add(HtmlControl.PropertyNames.Id, AddProjectPageConst.ADD_TITLE_TEXTBOX_ID_ERROR);
 
             return uiValidationError.TryFind();
-        }
-
-        public int RowCount()
-        {
-            var uiTable = new HtmlTable(browser);
-            uiTable.SearchProperties.Add(HtmlControl.PropertyNames.Class, ProjectsPageConst.INDEX_TABLE_CLASS);
-            uiTable.Find();
-
-            return uiTable.RowCount;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DailyPlanning.Tests.Constants;
 using Microsoft.VisualStudio.TestTools.UITesting;
 using Microsoft.VisualStudio.TestTools.UITesting.HtmlControls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DailyPlanning.Tests.Pages.WorkItemPages
 {
@@ -35,24 +36,24 @@ namespace DailyPlanning.Tests.Pages.WorkItemPages
             return this;
         }
 
-        public EditWorkItemPage EditStatus(string itemName)
+        public EditWorkItemPage EditStatus(int index)
         {
             var uiDropdownStatus = new HtmlComboBox(browser);
 
             uiDropdownStatus.SearchProperties.Add(HtmlControl.PropertyNames.Id, EditWorkItemPageConst.EDIT_STATUS_DROPDOWN_ID);
             uiDropdownStatus.Find();
-            uiDropdownStatus.SetProperty(HtmlComboBox.PropertyNames.SelectedItem, itemName);
+            uiDropdownStatus.SetProperty(HtmlComboBox.PropertyNames.SelectedIndex, index);
 
             return this;
         }
 
-        public EditWorkItemPage EditProject(string itemName)
+        public EditWorkItemPage EditProject(int index)
         {
             var uiDropdownProj = new HtmlComboBox(browser);
 
             uiDropdownProj.SearchProperties.Add(HtmlControl.PropertyNames.Id, EditWorkItemPageConst.EDIT_PROJECT_DROPDOWN_ID);
             uiDropdownProj.Find();
-            uiDropdownProj.SetProperty(HtmlComboBox.PropertyNames.SelectedItem, itemName);
+            uiDropdownProj.SetProperty(HtmlComboBox.PropertyNames.SelectedIndex, index);
 
             return this;
         }

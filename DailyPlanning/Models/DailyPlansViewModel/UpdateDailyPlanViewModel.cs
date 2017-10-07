@@ -22,7 +22,7 @@ namespace DailyPlanning.Models.DailyPlansViewModel
 
         public IEnumerable<WorkItemViewModel> Today { get; set; }
 
-        [StringLength(100, ErrorMessage = "Note cannot be longer then 100 characters")]
+        [StringLength(500)]
         public string Note { get; set; }
     }
 }

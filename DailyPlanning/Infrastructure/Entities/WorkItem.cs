@@ -1,5 +1,6 @@
 ﻿using DailyPlanning.Infrastructure.Enums;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -36,7 +37,6 @@ namespace DailyPlanning.Infrastructure.Entities
         public bool IsDeleted { get; set; }
 
         public ICollection<DailyPlan> DailyPlans { get; set; }
-
         [InverseProperty("DayBefore")]
         public virtual ICollection<DailyPlan> DailyPlansDayBefore { get; set; }
 

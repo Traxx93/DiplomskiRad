@@ -1,6 +1,7 @@
 ﻿using DailyPlanning.Tests.Constants;
 using Microsoft.VisualStudio.TestTools.UITesting;
 using Microsoft.VisualStudio.TestTools.UITesting.HtmlControls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DailyPlanning.Tests.Pages.ProjectPages
 {
@@ -22,7 +23,7 @@ namespace DailyPlanning.Tests.Pages.ProjectPages
             Mouse.Click(uiLinkProjects);
         }
 
-        public AddProjectPage NavigateToAddProject()
+        public AddProjectPage GoToAddProject()
         {
             var uiLinkAdd = new HtmlHyperlink(browser);
 
@@ -33,7 +34,7 @@ namespace DailyPlanning.Tests.Pages.ProjectPages
             return new AddProjectPage(browser);
         }
 
-        public EditProjectPage NavigateToEditProject()
+        public EditProjectPage GoToEditProject()
         {
             var uiLinkEdit = new HtmlHyperlink(new HtmlTable(browser));
 
@@ -44,7 +45,7 @@ namespace DailyPlanning.Tests.Pages.ProjectPages
             return new EditProjectPage(browser);
         }
 
-        public ProjectDetailsPage NavigateToProjectDetails()
+        public ProjectDetailsPage GoToProjectDetails()
         {
             var uiLinkDetails = new HtmlHyperlink(browser);
 
@@ -75,15 +76,6 @@ namespace DailyPlanning.Tests.Pages.ProjectPages
             uiTitle.WaitForControlReady();
 
             return uiTitle.InnerText.ToString().Equals(PageTitlesConst.PROJECT_TITLE);
-        }
-
-        public int RowCount()
-        {
-            var uiTable = new HtmlTable(browser);
-            uiTable.SearchProperties.Add(HtmlControl.PropertyNames.Class, ProjectsPageConst.INDEX_TABLE_CLASS);
-            uiTable.Find();
-
-            return uiTable.RowCount;
         }
     }
 }

@@ -24,17 +24,6 @@ namespace DailyPlanning.Tests.Pages.WorkItemPages
             return this;
         }
 
-        public AddWorkItemPage SelectStatus(string itemName)
-        {
-            var uiDropdownStatus = new HtmlComboBox(browser);
-
-            uiDropdownStatus.SearchProperties.Add(HtmlControl.PropertyNames.Id, AddWorkItemPageConst.ADD_STATUS_DROPDOWN_ID);
-            uiDropdownStatus.Find();
-            uiDropdownStatus.SetProperty(HtmlComboBox.PropertyNames.SelectedItem, itemName);
-
-            return this;
-        }
-
         public AddWorkItemPage InsertDescription(string description)
         {
             var uiDescription = new HtmlTextArea(browser);
@@ -46,13 +35,13 @@ namespace DailyPlanning.Tests.Pages.WorkItemPages
             return this;
         }
 
-        public AddWorkItemPage SelectProject(string itemName)
+        public AddWorkItemPage SelectProject(int index)
         {
             var uiDropdownProj = new HtmlComboBox(browser);
 
             uiDropdownProj.SearchProperties.Add(HtmlControl.PropertyNames.Id, AddWorkItemPageConst.ADD_PROJECT_DROPDOWN_ID);
             uiDropdownProj.Find();
-            uiDropdownProj.SetProperty(HtmlComboBox.PropertyNames.SelectedItem, itemName);
+            uiDropdownProj.SetProperty(HtmlComboBox.PropertyNames.SelectedIndex, index);
 
             return this;
         }
@@ -85,15 +74,6 @@ namespace DailyPlanning.Tests.Pages.WorkItemPages
             uiValidationError.SearchProperties.Add(HtmlControl.PropertyNames.Id, AddWorkItemPageConst.ADD_TITLE_VALIDATION_ID_ERROR);
 
             return uiValidationError.TryFind();
-        }
-
-        public int RowCount()
-        {
-            var uiTable = new HtmlTable(browser);
-            uiTable.SearchProperties.Add(HtmlControl.PropertyNames.Class, WorkItemsPageConst.INDEX_TABLE_CLASS);
-            uiTable.Find();
-
-            return uiTable.RowCount;
         }
     }
 }
